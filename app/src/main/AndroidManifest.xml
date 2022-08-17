@@ -10,9 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".NoteListActivity"
-            android:label="@string/title_activity_note_list"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".NavDrawerActivity"
+            android:exported="true"
+            android:label="@string/title_activity_nav_drawer"
+            android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,8 +21,15 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".NoteListActivity"
+            android:exported="true"
+            android:label="@string/title_activity_note_list"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+        <activity
             android:name=".MainActivity"
-            android:label="Edit note"></activity>
+            android:label="Edit note" />
     </application>
 
 </manifest>

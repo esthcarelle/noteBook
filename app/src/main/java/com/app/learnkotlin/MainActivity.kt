@@ -5,36 +5,47 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.databinding.DataBindingUtil
+import com.app.learnkotlin.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private var notePosition = POSITION_NOT_SET
+    private lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val adapter = ArrayAdapter<CourseInfo>(this,android.R.layout.simple_spinner_item,DataManager.courses.values.toList())
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
+        binding.spinner.adapter = adapter
 
-        notePosition = intent.getIntExtra(EXTRA_NOTE_POSITION, POSITION_NOT_SET)
+        notePosition = savedInstanceState?.getInt(EXTRA_NOTE_POSITION, POSITION_NOT_SET) ?: intent.getIntExtra(EXTRA_NOTE_POSITION, POSITION_NOT_SET)
 
         if(notePosition != POSITION_NOT_SET)
             displayNote()
+        else{
+            DataManager.notes.add(NoteInfo())
+            notePosition = DataManager.notes.lastIndex
+        }
 
     }
 
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(EXTRA_NOTE_POSITION,notePosition)
+    }
     private fun displayNote() {
          val note = DataManager.notes[notePosition]
 
-        titleText.setText(note.title)
-        editTextTextPersonName2.setText(note.text)
+        binding.titleText.setText(note.title)
+        binding.editTextTextPersonName2.setText(note.text)
 
         val coursePosition = DataManager.courses.values.indexOf(note.course)
-        spinner.setSelection(coursePosition)
+        binding.spinner.setSelection(coursePosition)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
         return true
     }
@@ -52,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
 
         if(notePosition >= DataManager.notes.lastIndex)
         {
@@ -64,6 +75,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveNote()
+    }
+
+    /**
+     * Save note in db
+     */
+    private fun saveNote() {
+       val note = DataManager.notes[notePosition]
+        note.title = binding.titleText.text.toString()
+        note.text = binding.editTextTextPersonName2.text.toString()
+        note.course = binding.spinner.selectedItem as CourseInfo
+
     }
 
     private fun moveText() {

@@ -1,6 +1,8 @@
 package com.app.learnkotlin
 
- object DataManager{
+import java.util.*
+
+object DataManager{
      val courses = HashMap<String,CourseInfo>()
      val notes = ArrayList<NoteInfo>();
 
